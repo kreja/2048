@@ -1,0 +1,82 @@
+// 变量
+$block-width: 40px;
+$block-border-width: 8px; // 偶数
+$block-border-raduis: 4px;
+
+$grid-color: #826762;
+$grid-border-color: #8B84A3;
+
+// 方块:: bg color font-size
+// 2 4 8 依次排序
+$block: (
+	(#D4B4EA #fff 18px)
+	(#A27CAC #fff 18px)
+	(#6309B2 #fff 18px)
+	(#AA77E8 #fff 18px)
+	(#825C95 #fff 18px)
+	(rgba(162, 124, 172, 0.7) #fff 18px)
+	(rgba(162, 124, 172, 0.9) #fff 18px)
+	(rgba(162, 124, 172, 0.9) #fff 18px)
+	(rgba(162, 124, 172, 0.9) #fff 18px)
+	(rgba(162, 124, 172, 0.9) #fff 18px)
+	(rgba(162, 124, 172, 0.9) #fff 18px)
+);
+
+.app{
+	position: relative;
+	width: calc(#{$block-width} * 4 + #{$block-border-width} * 4);
+	padding: calc(#{$block-border-width} / 2);
+	background: $grid-border-color;
+}
+
+.block{
+	display: inline-block;
+	margin: calc(#{$block-border-width} / 2);
+	width: $block-width;
+	height: $block-width;
+	line-height: $block-width;
+	text-align: center;
+	vertical-align: middle;
+	color: $grid-color;
+	background: #FDF6FF;
+	border-radius: $block-border-raduis;
+
+	@for $i from 1 through 11 {	
+	  	&.num-#{$i} { 
+	  		background: nth(nth($block, $i), 1);
+	  		color: nth(nth($block, $i), 2);
+	  		font-size: nth(nth($block, $i), 3);
+	  	}
+	}
+}
+
+.overlay{
+	position: absolute;
+	top: calc(#{$block-border-width} / 2);
+	left: calc(#{$block-border-width} / 2);
+	right: calc(#{$block-border-width} / 2);
+	bottom: calc(#{$block-border-width} / 2);
+	line-height: 100%;
+	background: rgba(255, 255, 255, 0.85);
+
+	.overlay-content{
+		text-align: center;
+
+		.text{
+			color: #7CB1BF;
+			font-weight: 900;
+			font-size: 20px;
+		}
+
+		.try-again-btn{
+			border: none;
+			outline: none;
+			background: #D8D2A8;
+			color: #fff;
+
+			&:hover{
+				background: #CAC498;
+			}
+		}
+	}
+}	

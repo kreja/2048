@@ -1,0 +1,83 @@
+.app {
+  position: relative;
+  width: calc(40px * 4 + 8px * 4);
+  padding: calc(8px / 2);
+  background: #8B84A3; }
+
+.block {
+  display: inline-block;
+  margin: calc(8px / 2);
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  vertical-align: middle;
+  color: #826762;
+  background: #FDF6FF;
+  border-radius: 4px; }
+  .block.num-1 {
+    background: #D4B4EA;
+    color: #fff;
+    font-size: 18px; }
+  .block.num-2 {
+    background: #A27CAC;
+    color: #fff;
+    font-size: 18px; }
+  .block.num-3 {
+    background: #6309B2;
+    color: #fff;
+    font-size: 18px; }
+  .block.num-4 {
+    background: #AA77E8;
+    color: #fff;
+    font-size: 18px; }
+  .block.num-5 {
+    background: #825C95;
+    color: #fff;
+    font-size: 18px; }
+  .block.num-6 {
+    background: rgba(162, 124, 172, 0.7);
+    color: #fff;
+    font-size: 18px; }
+  .block.num-7 {
+    background: rgba(162, 124, 172, 0.9);
+    color: #fff;
+    font-size: 18px; }
+  .block.num-8 {
+    background: rgba(162, 124, 172, 0.9);
+    color: #fff;
+    font-size: 18px; }
+  .block.num-9 {
+    background: rgba(162, 124, 172, 0.9);
+    color: #fff;
+    font-size: 18px; }
+  .block.num-10 {
+    background: rgba(162, 124, 172, 0.9);
+    color: #fff;
+    font-size: 18px; }
+  .block.num-11 {
+    background: rgba(162, 124, 172, 0.9);
+    color: #fff;
+    font-size: 18px; }
+
+.overlay {
+  position: absolute;
+  top: calc(8px / 2);
+  left: calc(8px / 2);
+  right: calc(8px / 2);
+  bottom: calc(8px / 2);
+  line-height: 100%;
+  background: rgba(255, 255, 255, 0.85); }
+  .overlay .overlay-content {
+    text-align: center; }
+    .overlay .overlay-content .text {
+      color: #7CB1BF;
+      font-weight: 900;
+      font-size: 20px; }
+    .overlay .overlay-content .try-again-btn {
+      border: none;
+      outline: none;
+      background: #D8D2A8;
+      color: #fff; }
+      .overlay .overlay-content .try-again-btn:hover {
+        background: #CAC498; }
