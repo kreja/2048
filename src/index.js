@@ -151,4 +151,3 @@ ReactDOM.render(
   <GridView />,
   document.getElementById('grid')
 );
-
