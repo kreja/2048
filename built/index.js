@@ -2,10 +2,13 @@
  * view
  */
 
+const size = 4;
+const moveTime = 310; // ms
+
 var GridView = React.createClass({displayName: "GridView",
 	getInitialState: function(){
 		return {
-			grid: new Grid({size: 4})
+			grid: new Grid({size: size})
 		};
 	},
 	componentDidMount: function () {
@@ -14,14 +17,37 @@ var GridView = React.createClass({displayName: "GridView",
 	componentWillUnmount: function () {
 	  window.removeEventListener('keydown', this.handleKeyDown);
 	},
-	handleKeyDown: function(e){
-		if(!this.state.grid.canMove){
+	handleKeyDown: function(e) {
+		let { grid } = this.state;
+		if(!grid.canMove){
 			return;
 		}
 		if(event.keyCode >= 37 && event.keyCode <= 40){
 			e.preventDefault();
+			
+			if(this.moveT){ // 避免多次操作
+				return;
+			}
+
+			// 先结束上次移动
+			clearTimeout(this.t);
 			this.setState({
-				grid: this.state.grid.move(e.keyCode - 37)
+				grid: grid.endMoving()
+			}, ()=>{
+				// 中间需要短暂显示下上次移动后的结果，所以定时执行本次移动
+				this.moveT = setTimeout(() => {
+					this.moveT = undefined;
+					
+					this.setState({
+						grid: this.state.grid.move(e.keyCode - 37)
+					}, ()=>{
+						this.t = setTimeout(() => {
+							this.setState({
+								grid: this.state.grid.endMoving()
+							});
+						}, moveTime);
+					});
+				}, 10);
 			});
 		}
 	},
@@ -35,43 +61,75 @@ var GridView = React.createClass({displayName: "GridView",
 		});
 	},
 	render: function(){
-		var grid = this.state.grid;
+		let { grid } = this.state;
+		const { addedScoreRecord } = grid;
 
 		return (
 			React.createElement("div", {className: "app"}, 
-				React.createElement("div", {className: "grid"}, 
+				React.createElement("div", {className: "hd"}, 
+					React.createElement("h1", {className: "title-2048"}, "2048"), 
+					React.createElement("div", {className: "score-container"}, 
+						React.createElement("div", {className: "score"}, 
+							React.createElement("div", {className: "title"}, "SCORE"), 
+							React.createElement("div", {className: "subtitle"},  grid.score)
+						), 
+						React.createElement("div", {className: "score"}, 
+							React.createElement("div", {className: "title"}, "BEST"), 
+							React.createElement("div", {className: "subtitle"},  grid.highestScore)
+						)
+					), 
 					
-						grid.blocks.map(function(row,rowIndex){
-							return (
-								React.createElement("div", {key: rowIndex}, 
-									
-										row.map(function(block, colIndex){
-											return (
-												React.createElement(Block, {key: colIndex, block: block})
-											)
-										})
-									
-								)
-							);
+						addedScoreRecord.map((score, index) => {
+							if(index == addedScoreRecord.length - 1){
+								return React.createElement("div", {key: index, className: "added-score iconfont icon-love"}, "+ ",  score  )
+							}
 						})
 					
 				), 
-				
-					grid.canMove ? null : React.createElement(GameOverLay, {onRestart: this.onRestart})
-				
+				React.createElement("div", {className: "grid-container"}, 
+					React.createElement("div", {className:  "grid " + (grid.moving ? 'moving' : '')}, 
+						React.createElement(Bg, null), 
+						 
+							grid.blocks.map((row,rowIndex) =>
+								row.map((block, colIndex) => {
+									return block.value ? 
+										React.createElement(ABlock, {key: colIndex, block: block, moving: grid.moving}) : 
+										null;
+								})
+							)
+						
+					), 
+					 (grid.moving || grid.canMove) ? null : React.createElement(GameOverLay, {onRestart: this.onRestart})
+				), 
+				React.createElement("div", {className: "btn-restart", onClick:  this.onRestart}, "NEW GAME")
 			)
 		);
 	}
 });
 
-var Block = React.createClass({displayName: "Block",
+var Bg = React.createClass({displayName: "Bg",
 	render: function(){
-		var block = this.props.block;
-		var blockClass = 'block';
-		blockClass += ( ' num-' + (block ? Math.log2(block) : 0) );
+		return React.createElement("div", null, 
+			
+				(new Array(size * size).fill(undefined)).map((i, index) => 
+					React.createElement("span", {key:  index, className: "block"})
+				)
+			
+		);
+	}
+});
+
+var ABlock = React.createClass({displayName: "ABlock",
+	render: function(){
+		const { block, moving } = this.props;
+		// moving 时，pos-x-y 变成 pos-nextX-nextY
+		var blockClass = 'block' 
+				+ ( ' num-' + (block.value ? Math.log2(block.value) : 0) ) 
+				+ ` pos-${moving ? block.nextX : block.x}-${moving ? block.nextY : block.y}`
+				+ (block.randomNew ? ' new' : '');
 
 		return (
-			React.createElement("span", {className: blockClass}, block ? block : null)
+			React.createElement("span", {className: blockClass}, block.value ? block.value : null)
 		);
 	}
 });

@@ -1,4 +1,9 @@
+@import './font';
+@import './mixins';
+
 // 变量
+$size: 4;
+$maxRow: $size - 1; // 最大行
 $block-width: 40px;
 $block-border-width: 8px; // 偶数
 $block-border-raduis: 4px;
@@ -6,8 +11,10 @@ $block-border-raduis: 4px;
 $grid-color: #826762;
 $grid-border-color: #8B84A3;
 
+$moveTime: .3s;
+
 // 方块:: bg color font-size
-// 2 4 8 依次排序
+// 2 4 8 依次排序，2^11 = 2048
 $block: (
 	(#D4B4EA #fff 18px)
 	(#A27CAC #fff 18px)
@@ -22,16 +29,86 @@ $block: (
 	(rgba(162, 124, 172, 0.9) #fff 18px)
 );
 
+html, 
+body,
+#grid,
 .app{
+	height: 100%;
+}
+.app{
+	@include flexbox(center, center);
+	@include flex-direction(column);
+}
+.hd{
+	$dh-lh: 18px;
+	$dh-pt: 5px;
+	
+	@include flexbox(center, space-between);
+	@include flex-direction(row);
+	width: ($block-width + $block-border-width) * $size + $block-border-width;
+	font-weight: bold;
+	margin-bottom: 10px;
 	position: relative;
-	width: calc(#{$block-width} * 4 + #{$block-border-width} * 4);
-	padding: calc(#{$block-border-width} / 2);
+
+	.title-2048{
+		font-size: 24px;
+		color: #6309B2;
+		margin: 0;
+		padding: 0;
+	}
+	.score-container{
+		@include flexbox(center, space-between);
+		@include flex-direction(row);
+	}
+	.score{
+		background: #D4B4EA;
+		padding: $dh-pt 10px;
+		text-align: center;
+		line-height: $dh-lh;
+		border-radius: 4px;
+		margin-left: 5px;
+
+		.title{
+			color: #eedbff;
+			font-size: 12px;
+		}
+		.subtitle{
+			color: #fff;
+			font-size: 18px;
+		}
+	}
+	.added-score{
+		opacity: 0;
+		position: absolute;
+		left: 80px;
+		@include animation(.8s ease-out rise);
+		color: #f65314;
+		font-size: 12px;
+
+		&.icon-love:before{
+			margin-right: 5px;
+		}
+	}
+
+	@include keyframes(rise) { 
+		0%   { opacity: 1; top: 16px; left: 95px; }
+		50%  { opacity: .6; left: 100px; }
+		100% { opacity: .1; top: -20px; left: 98px; }
+	};
+}
+.grid-container{
+	position: relative;
+	width: ($block-width + $block-border-width) * $size;
+	padding: $block-border-width / 2;
 	background: $grid-border-color;
 }
-
+.grid{
+	position: relative;
+	height: ($block-width + $block-border-width) * $size; 
+}
 .block{
 	display: inline-block;
-	margin: calc(#{$block-border-width} / 2);
+	margin: $block-border-width / 2;
 	width: $block-width;
 	height: $block-width;
 	line-height: $block-width;
@@ -41,21 +118,53 @@ $block: (
 	background: #FDF6FF;
 	border-radius: $block-border-raduis;
 
-	@for $i from 1 through 11 {	
+	@for $i from 1 through length($block) {
 	  	&.num-#{$i} { 
 	  		background: nth(nth($block, $i), 1);
 	  		color: nth(nth($block, $i), 2);
 	  		font-size: nth(nth($block, $i), 3);
 	  	}
 	}
+	&.new{
+		@include animation(.3s fadeIn);
+	}
+	@include keyframes(fadeIn) { 
+		from { opacity: 0; } to { opacity: 1; } 
+	};
+}
+.btn-restart{
+	background: #D4B4EA;
+	text-align: center;
+	border-radius: 4px;
+	padding: 5px;
+	margin-top: 10px;
+	color: #eedbff;
+
+	&:hover{
+		cursor: pointer;
+		color: #fff;
+	}
+}
+
+@for $row from 0 through $maxRow {
+  @for $column from 0 through $maxRow {
+    .pos-#{$column}-#{$row} {
+      	top: ($block-border-width + $block-width) * $row;
+      	left: ($block-border-width + $block-width) * $column;
+      	position: absolute;
+    }
+    .moving .pos-#{$column}-#{$row}{
+		transition: all $moveTime;
+    } 
+  }
 }
 
 .overlay{
 	position: absolute;
-	top: calc(#{$block-border-width} / 2);
-	left: calc(#{$block-border-width} / 2);
-	right: calc(#{$block-border-width} / 2);
-	bottom: calc(#{$block-border-width} / 2);
+	top: $block-border-width / 2;
+	left: $block-border-width / 2;
+	right: $block-border-width / 2;
+	bottom: $block-border-width / 2;
 	line-height: 100%;
 	background: rgba(255, 255, 255, 0.85);
 
